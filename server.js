@@ -52,7 +52,9 @@ router.delete('/group', function(req, res) {
     res.json({ message: 'request received' });
 });
 router.delete('/group/user', function(req, res) {
-    res.json({ message: 'Rmoe User from WG' });
+    console.log(req.body);
+    dbfunc.deleteUserFromFlat(req.body.userName, req.body.flatId);
+    res.json({ message: 'Request bla bla' });
 });
 // =============================================================================
 

@@ -74,3 +74,18 @@ exports.deleteUser = function(userName) {
   });
 }
 // =============================================================================
+// =============================================================================
+// db function to delete a Flat with given flatid
+exports.deleteUserFromFlat = function(userName, flatId) {
+  User.findOneAndRemove({"userName":userName}, function(err, user){
+    if(!err){
+    console.log("User with name: " + userName + " successfuly removed");
+    Flat.findOneAndRemove({"residents.user._id":user._id}, function(err){
+      if (!err) {
+        console.log("User with name:" + userName + " successfuly removed from FLAT");
+      }
+    });
+  }
+  });
+}
+// =============================================================================
