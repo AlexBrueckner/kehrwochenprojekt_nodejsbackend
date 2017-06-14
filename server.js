@@ -21,9 +21,13 @@ var router = express.Router();              // get an instance of the express Ro
 router.post('/user', function(req, res) {
     console.log(req.body);
     dbfunc.createUser(req.body);
+    res.json({ message: 'request received' });
 });
 router.delete('/user', function(req, res) {
-    res.json({ message: 'delete user' });
+    console.log(req.body);
+    dbfunc.deleteUser(req.body.userName);
+    res.json({ message: 'request received' });
+
 });
 // =============================================================================
 
@@ -34,15 +38,18 @@ router.get('/group', function(req, res) {
 });
 router.post('/group', function(req, res) {
     console.log(req.body);
-    dbfunc.createFlat(req.body); 
+    dbfunc.createFlat(req.body);
+    res.json({ message: 'request received' });
 });
 router.put('/group', function(req, res) {
     console.log(req.body);
-
-    res.json({ message: 'Add user to WG' });
+    dbfunc.addUserToFlat(req.body.userName, req.body.flatId);
+    res.json({ message: 'request received' });
 });
 router.delete('/group', function(req, res) {
-    res.json({ message: 'Delete WG' });
+    console.log(req.body);
+    dbfunc.deleteFlat(req.body.flatId);
+    res.json({ message: 'request received' });
 });
 router.delete('/group/user', function(req, res) {
     res.json({ message: 'Rmoe User from WG' });

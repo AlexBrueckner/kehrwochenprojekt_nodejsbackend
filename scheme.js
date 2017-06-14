@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new mongoose.Schema({
-  _userId : Schema.Types.ObjectId,
   userName: {
     type: String,
     lowercase: true
@@ -18,7 +17,6 @@ var userSchema = new mongoose.Schema({
 exports.user = mongoose.model('User', userSchema);
 
 var taskSchema = new mongoose.Schema({
-  _taskId: Schema.Types.ObjectId,
   name: String,
   creationDate: {
     type: Date,
@@ -37,7 +35,6 @@ var taskSchema = new mongoose.Schema({
 exports.task = mongoose.model('Task', taskSchema);
 
 var flatSchema = new mongoose.Schema({
-  _flatId: Schema.Types.ObjectId,
   name: String,
   residents: [{
     type: Schema.Types.ObjectId,
