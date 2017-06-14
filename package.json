@@ -1,0 +1,19 @@
+{
+  "name": "Kehrwochenbackend",
+  "version": "0.0.1",
+  "description": "Backend for our mobile computing project at the university",
+  "contributors": [
+    {
+      "name": "Matthias Hofmaier",
+      "email": "Matthias.Hofmaier@Student.Reutlingen-University.de"
+    }
+  ],
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongoose": "^4.10.6"
+  }
+}
