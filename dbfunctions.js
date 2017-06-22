@@ -58,6 +58,7 @@ exports.addUserToFlat = function(userName, flatId) {
   }});
 }
 // =============================================================================
+
 // =============================================================================
 // db function to delete a Flat with given flatid
 exports.deleteFlat = function(flatId) {
@@ -66,26 +67,43 @@ exports.deleteFlat = function(flatId) {
   });
 }
 // =============================================================================
+
 // =============================================================================
-// db function to delete a Flat with given flatid
+// db function to delete a User with given userName
+// function automatically removes user from flats
 exports.deleteUser = function(userName) {
-  User.findOneAndRemove({"userName":userName}, function(err){
-    console.log("User with name: " + userName + " successfuly removed");
+  User.findOne({"userName":userName}, function(err, user){
+    Flat.findOne({"residents":user._id}, function(err, flat){
+      console.log("FLAT:" + flat);
+      flat.residents.pull({"_id":user._id});
+      flat.save();
+      user.remove();
+      user.save();
+      console.log("User with name: " + userName + " successfuly removed");
+    });
   });
 }
 // =============================================================================
+
 // =============================================================================
 // db function to delete a Flat with given flatid
-exports.deleteUserFromFlat = function(userName, flatId) {
-  User.findOneAndRemove({"userName":userName}, function(err, user){
-  /*  if(!err){
-    console.log("User with name: " + userName + " successfuly removed");
-    Flat.findOneAndRemove({"residents.user._id":user._id}, function(err){
-      if (!err) {
-        console.log("User with name:" + userName + " successfuly removed from FLAT");
-      }
+exports.deleteUserFromFlat = function deleteUserFromFlat(userName, flatId) {
+  Flat.findOne({"_id":flatId}, function(err, flat){
+    if(!err){
+    User.findOne({"userName":userName}, function(err, user){
+      if(!err){
+      flat.residents.pull({"_id":user._id});
+      flat.save();
+    }
     });
-  }*/
+  }
   });
+}
+// =============================================================================
+
+// =============================================================================
+// db function to delete a Flat with given flatid
+exports.changeTask = function deleteUserFromFlat(userName, flatId) {
+
 }
 // =============================================================================

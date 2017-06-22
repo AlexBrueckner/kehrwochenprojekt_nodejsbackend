@@ -5,6 +5,11 @@ var bodyParser = require('body-parser');
 var dbfunc = require('./dbfunctions');
 
 
+
+
+//increase bodyparse capacity limit so pictures can be sent
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -60,10 +65,13 @@ router.delete('/group/user', function(req, res) {
 
 // =============================================================================
 // Task routes
-router.post('/group/task', function(req, res) {
+router.post('/group/task', function(req, res){
+  res.json({message: 'Task added to wg'});
+});
+router.post('/group/task/user', function(req, res) {
     res.json({ message: 'It is <name> turn to clean' });
 });
-router.put('/group/task', function(req, res) {
+router.put('/group/task/user', function(req, res) {
     res.json({ message: '<name> finished his job' });
 });
 router.delete('/group/task', function(req, res) {
@@ -76,7 +84,7 @@ router.delete('/group/task', function(req, res) {
 
 
 // REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
+// all of our routes will be prefixed with /app
 app.use('/app', router);
 
 // START THE SERVER
