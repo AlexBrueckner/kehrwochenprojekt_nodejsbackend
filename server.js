@@ -41,7 +41,7 @@ router.delete('/user', function(req, res) {
 // =============================================================================
 // /app/group
 router.get('/group', function(req, res) {
-    dbfunc.getFlatWithUserName(res, req.query);
+    dbfunc.getFlatByUserName(res, req.query);
 });
 router.post('/group', function(req, res) {
     console.log(req.body);
@@ -53,40 +53,85 @@ router.put('/group', function(req, res) {
     dbfunc.addUserToFlat(req.body.userName, req.body.flatId);
     res.json({ message: 'request received' });
 });
+router.patch('/group', function(req, res){
+    dbfunc.updateFlat(req.body);
+    res.json({ message: 'request received' });
+});
 router.delete('/group', function(req, res) {
     console.log(req.body);
     dbfunc.deleteFlat(req.body.flatId);
     res.json({ message: 'request received' });
 });
 // =============================================================================
-// =============================================================================
-//WG-Routes
 
+// =============================================================================
+// /app/group/user
+router.get('/group/user', function(req, res){
+  dbfunc.getUsersByFlatId(res, req.query);
+});
 router.delete('/group/user', function(req, res) {
     console.log(req.body);
     dbfunc.deleteUserFromFlat(req.body.userName, req.body.flatId);
-    res.json({ message: 'Request bla bla' });
+    res.json({ message: 'request received' });
 });
 // =============================================================================
 
 // =============================================================================
-// Task routes
-router.post('/group/task', function(req, res){
-  res.json({message: 'Task added to wg'});
-});
-router.post('/group/task/user', function(req, res) {
-    res.json({ message: 'It is <name> turn to clean' });
-});
-router.put('/group/task/user', function(req, res) {
-    res.json({ message: '<name> finished his job' });
-});
-router.delete('/group/task', function(req, res) {
-    res.json({ message: 'Delete task' });
+// /app/group/task
+router.get('/group/task', function(req, res){
+  dbfunc.getTasksByFlatId(res, req.query);
 });
 // =============================================================================
 
+// =============================================================================
+// /app/task
+router.get('/task', function(req, res){
+  dbfunc.getTaskByTaskId(res, req.query);
+});
+router.post('/task', function(req, res){
+  dbfunc.createTask(req.body);
+  res.json({ message: 'request received' });
+});
+router.put('/task', function(req, res){
+  dbfunc.changeTaskState(req.body);
+  res.json({ message: 'request received' });
+});
+router.patch('/task', function(req, res){
+  dbfunc.updateTask(req.body);
+  res.json({ message: 'request received' });
+});
+router.delete('/task', function(req, res){
+  dbfunc.deleteTask(req.body);
+  res.json({ message: 'request received' });
+});
+// =============================================================================
 
+// =============================================================================
+// /app/task/images
+router.post('/task/image', function(req, res){
+  dbfunc.addImageToTask(req.body);
+  res.json({ message: 'request received' });
+});
+// =============================================================================
 
+// =============================================================================
+// /app/task/images
+router.post('/task/comment', function(req, res){
+  dbfunc.addCommentToTask(req.body);
+  res.json({ message: 'request received' });
+});
+// =============================================================================
+
+// =============================================================================
+// /app/task/user
+router.get('/task/user', function(req, res){
+  dbfunc.getTasksByUserName(res, req.query);
+});
+router.post('/task/user', function(req, res){
+  dbfunc.assignTaskToNextUser(req.body);
+  res.json({ message: 'request received' });
+});
+// =============================================================================
 
 
 // REGISTER OUR ROUTES -------------------------------

@@ -2,10 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var userSchema = new mongoose.Schema({
-  userName: {
-    type: String,
-    lowercase: true
-  },
+  userName: String,
   password: String,
   foreName: String,
   surName: String,
@@ -28,8 +25,8 @@ var taskSchema = new mongoose.Schema({
     enum: ['RED', 'YELLOW', 'GREEN'],
     default: 'RED'
   },
-  images: [{path: String}],
-  comments: [{comment: String}],
+  images: [String],
+  comments: [String],
   guideline: String
 });
 exports.task = mongoose.model('Task', taskSchema);
