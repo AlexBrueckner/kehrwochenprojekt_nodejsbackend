@@ -22,24 +22,26 @@ var port = 8080;        // set our port
 var router = express.Router();              // get an instance of the express Router
 
 // =============================================================================
-// User routes
+// /app/user
 router.post('/user', function(req, res) {
     console.log(req.body);
     dbfunc.createUser(req.body);
     res.json({ message: 'request received' });
 });
+router.put('/user', function(req, res){
+    dbfunc.checkUserAuth(res, req.body);
+});
 router.delete('/user', function(req, res) {
     console.log(req.body);
     dbfunc.deleteUser(req.body.userName);
     res.json({ message: 'request received' });
-
 });
 // =============================================================================
 
 // =============================================================================
-//WG-Routes
+// /app/group
 router.get('/group', function(req, res) {
-    res.json({ message: 'Get WG with tasks an members' });
+    dbfunc.getFlatWithUserName(res, req.query);
 });
 router.post('/group', function(req, res) {
     console.log(req.body);
@@ -56,6 +58,10 @@ router.delete('/group', function(req, res) {
     dbfunc.deleteFlat(req.body.flatId);
     res.json({ message: 'request received' });
 });
+// =============================================================================
+// =============================================================================
+//WG-Routes
+
 router.delete('/group/user', function(req, res) {
     console.log(req.body);
     dbfunc.deleteUserFromFlat(req.body.userName, req.body.flatId);
