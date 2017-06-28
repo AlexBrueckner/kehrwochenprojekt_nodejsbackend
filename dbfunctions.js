@@ -1,8 +1,8 @@
 //dbfunctions.js
 var mongoose = require('mongoose');
-var User = require('../models/user');
-var Flat = require('../models/flat');
-var Task = require('../models/task');
+var User = require('./scheme').user;
+var Flat = require('./scheme').flat;
+var Task = require('./scheme').task;
 var bcrypt = require('bcryptjs');
 var fs = require('fs');
 var randomstring = require("randomstring");
