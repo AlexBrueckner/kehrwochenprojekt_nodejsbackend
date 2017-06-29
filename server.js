@@ -88,8 +88,8 @@ router.get('/task', function(req, res){
   dbfunc.getTaskByTaskId(res, req.query);
 });
 router.post('/task', function(req, res){
-  dbfunc.createTask(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.createTask(res, req.body);
+ // res.json({ message: 'request received' });
 });
 router.put('/task', function(req, res){
   dbfunc.changeTaskState(req.body);

@@ -8,7 +8,7 @@ var fs = require('fs');
 var randomstring = require("randomstring");
 // =============================================================================
 // Database connection
-mongoose.connect('mongodb://root:toor@ds123662.mlab.com:23662/mc_database');
+mongoose.connect('mongodb://root:toor@ds119718.mlab.com:19718/bruckieshood');
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error"));
 db.once("open", function(callback) {
@@ -220,7 +220,7 @@ exports.getTasksByFlatId = function(res, query) {
 
 // =============================================================================
 // db function to create a task with given username
-exports.createTask = function(obj) {
+exports.createTask = function(res, obj) {
   User.findOne({
     "userName": obj.userName
   }, function(err, user) {
@@ -230,8 +230,10 @@ exports.createTask = function(obj) {
         if (!err) {
           user.tasks.push(newTask);
           user.save();
+		  
         }
       });
+	  res.json({taskId:newTask._id});
     }
   });
 }
