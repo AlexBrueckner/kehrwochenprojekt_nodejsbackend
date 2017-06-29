@@ -58,10 +58,12 @@ exports.checkUserAuth = function(res, obj) {
 
 // =============================================================================
 // db function to create a new Flat with given JSON object
-exports.createFlat = function(obj) {
+exports.createFlat = function(res, obj) {
   var newFlat = new Flat(obj);
-  newFlat.save(function(error) {
+  newFlat.save(function(error, flat) {
     if (!error) {
+      console.log(flat._id);
+      res.json({flatId:flat._id})
       console.log("New Flat added to database")
     }
   });

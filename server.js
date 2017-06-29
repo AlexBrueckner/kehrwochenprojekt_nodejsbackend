@@ -45,8 +45,7 @@ router.get('/group', function(req, res) {
 });
 router.post('/group', function(req, res) {
     console.log(req.body);
-    dbfunc.createFlat(req.body);
-    res.json({ message: 'request received' });
+    dbfunc.createFlat(res, req.body);
 });
 router.put('/group', function(req, res) {
     console.log(req.body);
