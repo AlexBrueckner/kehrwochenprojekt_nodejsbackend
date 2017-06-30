@@ -24,17 +24,13 @@ var router = express.Router();              // get an instance of the express Ro
 // =============================================================================
 // /app/user
 router.post('/user', function(req, res) {
-    console.log(req.body);
-    dbfunc.createUser(req.body);
-    res.json({ message: 'request received' });
+    dbfunc.createUser(res, req.body);
 });
 router.put('/user', function(req, res){
     dbfunc.checkUserAuth(res, req.body);
 });
 router.delete('/user', function(req, res) {
-    console.log(req.body);
-    dbfunc.deleteUser(req.body.userName);
-    res.json({ message: 'request received' });
+    dbfunc.deleteUser(res, req.body.userName);
 });
 // =============================================================================
 
@@ -44,22 +40,16 @@ router.get('/group', function(req, res) {
     dbfunc.getFlatByUserName(res, req.query);
 });
 router.post('/group', function(req, res) {
-    console.log(req.body);
     dbfunc.createFlat(res, req.body);
 });
 router.put('/group', function(req, res) {
-    console.log(req.body);
-    dbfunc.addUserToFlat(req.body.userName, req.body.flatId);
-    res.json({ message: 'request received' });
+    dbfunc.addUserToFlat(res, req.body.userName, req.body.flatId);
 });
 router.patch('/group', function(req, res){
-    dbfunc.updateFlat(req.body);
-    res.json({ message: 'request received' });
+    dbfunc.updateFlat(res, req.body);
 });
 router.delete('/group', function(req, res) {
-    console.log(req.body);
-    dbfunc.deleteFlat(req.body.flatId);
-    res.json({ message: 'request received' });
+    dbfunc.deleteFlat(res, req.body.flatId);
 });
 // =============================================================================
 
@@ -69,9 +59,7 @@ router.get('/group/user', function(req, res){
   dbfunc.getUsersByFlatId(res, req.query);
 });
 router.delete('/group/user', function(req, res) {
-    console.log(req.body);
-    dbfunc.deleteUserFromFlat(req.body.userName, req.body.flatId);
-    res.json({ message: 'request received' });
+    dbfunc.deleteUserFromFlat(res, req.body.userName, req.body.flatId);
 });
 // =============================================================================
 
@@ -89,35 +77,29 @@ router.get('/task', function(req, res){
 });
 router.post('/task', function(req, res){
   dbfunc.createTask(res, req.body);
- // res.json({ message: 'request received' });
 });
 router.put('/task', function(req, res){
-  dbfunc.changeTaskState(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.changeTaskState(res, req.body);
 });
 router.patch('/task', function(req, res){
-  dbfunc.updateTask(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.updateTask(res, req.body);
 });
 router.delete('/task', function(req, res){
-  dbfunc.deleteTask(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.deleteTask(res, req.body);
 });
 // =============================================================================
 
 // =============================================================================
 // /app/task/images
 router.post('/task/image', function(req, res){
-  dbfunc.addImageToTask(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.addImageToTask(res, req.body);
 });
 // =============================================================================
 
 // =============================================================================
 // /app/task/images
 router.post('/task/comment', function(req, res){
-  dbfunc.addCommentToTask(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.addCommentToTask(res, req.body);
 });
 // =============================================================================
 
@@ -127,8 +109,7 @@ router.get('/task/user', function(req, res){
   dbfunc.getTasksByUserName(res, req.query);
 });
 router.post('/task/user', function(req, res){
-  dbfunc.assignTaskToNextUser(req.body);
-  res.json({ message: 'request received' });
+  dbfunc.assignTaskToNextUser(res, req.body);
 });
 // =============================================================================
 

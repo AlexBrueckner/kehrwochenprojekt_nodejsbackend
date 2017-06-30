@@ -18,7 +18,7 @@ db.once("open", function(callback) {
 
 // =============================================================================
 // db function to create a new User with given JSON object
-exports.createUser = function(obj) {
+exports.createUser = function(res, obj) {
   obj.password = bcrypt.hashSync(obj.password, 8);
   var newUser = new User(obj);
   User.findOne({
@@ -29,6 +29,10 @@ exports.createUser = function(obj) {
         if (!err) {
           console.log("New User added to database");
         }
+      });
+    } else {
+      res.json({
+        ok: 'user does already exist'
       });
     }
   });
@@ -42,15 +46,17 @@ exports.checkUserAuth = function(res, obj) {
   User.findOne({
     'userName': obj.userName
   }, function(err, user) {
-    hash = user.password;
-    if (bcrypt.compareSync(obj.password, hash)) {
-      res.json({
-        auth: 'ok'
-      });
-    } else {
-      res.json({
-        auth: 'err'
-      });
+    if (user && !err) {
+      hash = user.password;
+      if (bcrypt.compareSync(obj.password, hash)) {
+        res.json({
+          auth: 'ok'
+        });
+      } else {
+        res.json({
+          auth: 'err'
+        });
+      }
     }
   });
 }
@@ -63,8 +69,14 @@ exports.createFlat = function(res, obj) {
   newFlat.save(function(error, flat) {
     if (!error) {
       console.log(flat._id);
-      res.json({flatId:flat._id})
+      res.json({
+        flatId: flat._id
+      })
       console.log("New Flat added to database")
+    } else {
+      res.json({
+        error: 'error while saving flat'
+      });
     }
   });
 }
@@ -72,7 +84,7 @@ exports.createFlat = function(res, obj) {
 
 // =============================================================================
 // db function to create a new Flat with given username and flatid
-exports.addUserToFlat = function(userName, flatId) {
+exports.addUserToFlat = function(res, userName, flatId) {
   User.findOne({
     'userName': userName
   }, function(err, user) {
@@ -82,12 +94,27 @@ exports.addUserToFlat = function(userName, flatId) {
       }, function(err, flat) {
         if (!err && flat) {
           if (!flat.residents.some(function(resident) {
-              return resident.equals(user.id);
+              return resident.equals(user.id); //check if user is already in the flat
             })) {
             flat.residents.push(user);
             flat.save();
+            res.json({
+              ok: 'user added successfuly'
+            });
+          } else {
+            res.json({
+              error: 'user already in flat'
+            });
           }
+        } else {
+          res.json({
+            error: 'flat not found'
+          });
         }
+      });
+    } else {
+      res.json({
+        error: 'user not found'
       });
     }
   });
@@ -96,11 +123,19 @@ exports.addUserToFlat = function(userName, flatId) {
 
 // =============================================================================
 // db function to delete a Flat with given flatid
-exports.deleteFlat = function(flatId) {
+exports.deleteFlat = function(res, flatId) {
   Flat.findOneAndRemove({
     "_id": flatId
   }, function(err) {
-    console.log("Flat with ID: " + flatId + " successfuly removed");
+    if (!err) {
+      res.json({
+        ok: 'flat with id removed successfuly'
+      })
+    } else {
+      res.json({
+        error: 'err occured while removing the flat'
+      });
+    }
   });
 }
 // =============================================================================
@@ -108,42 +143,67 @@ exports.deleteFlat = function(flatId) {
 // =============================================================================
 // db function to delete a User with given userName
 // function automatically removes user from flats
-exports.deleteUser = function(userName) {
+exports.deleteUser = function(res, userName) {
   User.findOne({
     "userName": userName
   }, function(err, user) {
-    Flat.findOne({
-      "residents": user._id
-    }, function(err, flat) {
-      console.log("FLAT:" + flat);
-      flat.residents.pull({
-        "_id": user._id
+    if (!err && user) {
+      Flat.findOne({
+        "residents": user._id
+      }, function(err, flat) {
+        if (!err && flat) {
+          console.log("FLAT:" + flat);
+          flat.residents.pull({
+            "_id": user._id
+          });
+          flat.save();
+          user.remove();
+          user.save();
+          res.json({
+            ok: 'user successfuly removed'
+          });
+        } else {
+          res.json({
+            error: 'user not found'
+          });
+        }
       });
-      flat.save();
-      user.remove();
-      user.save();
-      console.log("User with name: " + userName + " successfuly removed");
-    });
+    } else {
+      res.json({
+        error: 'user not found'
+      });
+    }
   });
 }
 // =============================================================================
 
 // =============================================================================
 // db function to delete a Flat with given flatid
-exports.deleteUserFromFlat = function deleteUserFromFlat(userName, flatId) {
+exports.deleteUserFromFlat = function deleteUserFromFlat(res, userName, flatId) {
   Flat.findOne({
     "_id": flatId
   }, function(err, flat) {
-    if (!err) {
+    if (!err && flat) {
       User.findOne({
         "userName": userName
       }, function(err, user) {
-        if (!err) {
+        if (!err && user) {
           flat.residents.pull({
             "_id": user._id
           });
           flat.save();
+          res.json({
+            ok: 'user successfuly removed from flat'
+          });
+        } else {
+          res.json({
+            error: 'user not found'
+          });
         }
+      });
+    } else {
+      res.json({
+        error: 'flat not found'
       });
     }
   });
@@ -156,13 +216,21 @@ exports.getFlatByUserName = function(res, query) {
   User.findOne({
     "userName": query.userName
   }, function(err, user) {
-    if (!err) {
+    if (!err && user) {
       Flat.findOne({
         "residents": user._id
       }).populate("residents").exec(function(err, flat) {
-        if (!err) {
+        if (!err && user) {
           res.json(flat);
+        } else {
+          res.json({
+            error: 'user not found'
+          });
         }
+      });
+    } else {
+      res.json({
+        error: 'user not found'
       });
     }
   });
@@ -171,17 +239,24 @@ exports.getFlatByUserName = function(res, query) {
 
 // =============================================================================
 // db function to update a Flat with given flatId
-exports.updateFlat = function(obj) {
+exports.updateFlat = function(res, obj) {
   Flat.findOne({
     "_id": obj.flatId
   }, function(err, flat) {
-    if (!err) {
+    if (!err && flat) {
       if (obj.name && obj.name != flat.name) {
         flat.name = obj.name;
       } else if (obj.penalty && obj.penalty != flat.penalty) {
         flat.penalty = obj.penalty
       }
       flat.save();
+      res.json({
+        ok: 'flat not found'
+      });
+    } else {
+      res.json({
+        error: 'flat not found'
+      });
     }
   });
 }
@@ -193,8 +268,12 @@ exports.getUsersByFlatId = function(res, query) {
   Flat.findOne({
     "_id": query.flatId
   }).populate("residents").exec(function(err, flat) {
-    if (!err) {
+    if (!err && flat) {
       res.json(flat.residents);
+    } else {
+      res.json({
+        error: 'user not found'
+      });
     }
   });
 }
@@ -207,12 +286,15 @@ exports.getTasksByFlatId = function(res, query) {
     "_id": query.flatId
   }).populate("residents").exec(function(err, flat) {
     var taskArray = [];
-    if (!err) {
+    if (!err && flat) {
       flat.residents.some(function(resident) {
-        console.log(resident.tasks);
         taskArray.push(resident.tasks);
       });
       res.json(taskArray);
+    } else {
+      res.json({
+        error: 'flat not found'
+      });
     }
   });
 }
@@ -224,16 +306,24 @@ exports.createTask = function(res, obj) {
   User.findOne({
     "userName": obj.userName
   }, function(err, user) {
-    if (!err) {
+    if (!err && user) {
       var newTask = new Task(obj.task);
       newTask.save(function(err) {
         if (!err) {
           user.tasks.push(newTask);
           user.save();
-		  
+          res.json({
+            taskId: newTask._id
+          });
         }
+        res.json({
+          error: 'error occured while saving task'
+        });
       });
-	  res.json({taskId:newTask._id});
+    } else {
+      res.json({
+        error: 'user not found'
+      });
     }
   });
 }
@@ -245,8 +335,12 @@ exports.getTaskByTaskId = function(res, query) {
   Task.findOne({
     "_id": query.taskId
   }, function(err, task) {
-    if (!err) {
+    if (!err && task) {
       res.json(task);
+    } else {
+      res.json({
+        error: 'task not found'
+      });
     }
   });
 }
@@ -254,13 +348,20 @@ exports.getTaskByTaskId = function(res, query) {
 
 // =============================================================================
 // db function to change a tasks completion state with given taksID
-exports.changeTaskState = function(obj) {
+exports.changeTaskState = function(res, obj) {
   Task.findOne({
     "_id": obj.taskId
   }, function(err, task) {
-    if (!err) {
+    if (!err && task) {
       task.state = obj.state;
       task.save();
+      res.json({
+        ok: 'task state changed'
+      });
+    } else {
+      res.json({
+        error: 'task not found'
+      });
     }
   });
 }
@@ -268,11 +369,11 @@ exports.changeTaskState = function(obj) {
 
 // =============================================================================
 // db function to update a task with given taskID
-exports.updateTask = function(obj) {
+exports.updateTask = function(res, obj) {
   Task.findOne({
     "_id": obj.taskId
   }, function(err, task) {
-    if (!err) {
+    if (!err && task) {
       if (obj.name && obj.name != task.name) {
         task.name = obj.name;
       } else if (obj.deadline && obj.deadline != task.deadline) {
@@ -281,6 +382,13 @@ exports.updateTask = function(obj) {
         task.guideline = obj.guideline;
       }
       task.save();
+      res.json({
+        ok: 'task successfuly updated'
+      });
+    } else {
+      res.json({
+        error: 'task not found'
+      });
     }
   });
 }
@@ -289,7 +397,7 @@ exports.updateTask = function(obj) {
 // =============================================================================
 // db function to add an Image to a task with given taskID
 // the image is stored on the server
-exports.addImageToTask = function(obj) {
+exports.addImageToTask = function(res, obj) {
   console.log(obj);
   var rawImg = obj.picture,
     base64Data = rawImg.replace(/^data:image\/png;base64,/, ''),
@@ -301,9 +409,22 @@ exports.addImageToTask = function(obj) {
       Task.findOne({
         "_id": obj.taskId
       }, function(err, task) {
-        task.images.push(imageLocation);
-        task.save();
+        if (!err && task) {
+          task.images.push(imageLocation);
+          task.save();
+          res.json({
+            ok: 'image successfuly added to task'
+          });
+        } else {
+          res.json({
+            error: 'task not found'
+          })
+        }
       });
+    } else {
+      res.json({
+        error: 'error while writing image'
+      })
     }
   });
 }
@@ -311,14 +432,21 @@ exports.addImageToTask = function(obj) {
 
 // =============================================================================
 // db function to add a comment to a task with given taskID
-exports.addCommentToTask = function(obj) {
+exports.addCommentToTask = function(res, obj) {
   Task.findOne({
     "_id": obj.taskId
   }, function(err, task) {
     console.log(task);
-    if (!err) {
+    if (!err && task) {
       task.comments.push(obj.comment);
       task.save();
+      res.json({
+        ok: 'comment successfuly added'
+      });
+    } else {
+      res.json({
+        error: 'task not found'
+      });
     }
   });
 }
@@ -330,8 +458,12 @@ exports.getTasksByUserName = function(res, query) {
   User.findOne({
     "userName": query.userName
   }).populate("tasks").exec(function(err, user) {
-    if (!err) {
+    if (!err && user) {
       res.json(user.tasks);
+    } else {
+      res.json({
+        error: 'user not found'
+      });
     }
   });
 }
@@ -340,11 +472,11 @@ exports.getTasksByUserName = function(res, query) {
 // =============================================================================
 // db function to assign a task to the next user with given taskid,
 // oldUserName and newUserName
-exports.assignTaskToNextUser = function(obj) {
+exports.assignTaskToNextUser = function(res, obj) {
   User.findOne({
     "userName": obj.oldUserName
   }, function(err, user) {
-    if (!err) {
+    if (!err && user) {
       user.tasks.pull({
         "_id": obj.taskId
       });
@@ -352,10 +484,21 @@ exports.assignTaskToNextUser = function(obj) {
       User.findOne({
         "userName": obj.newUserName
       }, function(err, user) {
-        if (!err) {
+        if (!err && user) {
           user.tasks.push(obj.taskId);
           user.save();
+          res.json({
+            ok: 'task succesfuly assigned to user'
+          });
+        } else {
+          res.json({
+            error: 'user not found'
+          });
         }
+      });
+    } else {
+      res.json({
+        error: 'user not found'
       });
     }
   });
@@ -364,12 +507,32 @@ exports.assignTaskToNextUser = function(obj) {
 
 // =============================================================================
 // db function to delete a Task with given TaskId
-exports.deleteTask = function(obj) {
-  User.findOne({"tasks":obj.taskId}, function(err, user){
-    if(!err){
-      user.tasks.pull({"_id":obj.taskId});
+exports.deleteTask = function(res, obj) {
+  User.findOne({
+    "tasks": obj.taskId
+  }, function(err, user) {
+    if (!err && user) {
+      user.tasks.pull({
+        "_id": obj.taskId
+      });
       user.save();
-      Task.findOneAndRemove({"_id":obj.taskId}, function(err){});
+      Task.findOneAndRemove({
+        "_id": obj.taskId
+      }, function(err, task) {
+        if (!err && task) {
+          res.json({
+            ok: 'task succesfuly removed'
+          });
+        } else {
+          res.json({
+            error: 'task not found'
+          });
+        }
+      });
+    } else {
+      res.json({
+        error: 'user not found'
+      });
     }
   });
 }
