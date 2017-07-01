@@ -8,7 +8,7 @@ var fs = require('fs');
 var randomstring = require("randomstring");
 // =============================================================================
 // Database connection
-mongoose.connect('mongodb://root:toor@ds119718.mlab.com:19718/bruckieshood');
+mongoose.connect('mongodb://root:toor@ds123662.mlab.com:23662/mc_database');
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error"));
 db.once("open", function(callback) {
@@ -27,12 +27,15 @@ exports.createUser = function(res, obj) {
     if (user == null) {
       newUser.save(function(err) {
         if (!err) {
+          res.json({
+            ok: 'user added to database'
+          });
           console.log("New User added to database");
         }
       });
     } else {
       res.json({
-        ok: 'user does already exist'
+        errpr: 'user does already exist'
       });
     }
   });
@@ -315,10 +318,11 @@ exports.createTask = function(res, obj) {
           res.json({
             taskId: newTask._id
           });
-        }
+        } else {
         res.json({
           error: 'error occured while saving task'
         });
+      }
       });
     } else {
       res.json({
