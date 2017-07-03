@@ -60,6 +60,10 @@ exports.checkUserAuth = function(res, obj) {
           auth: 'err'
         });
       }
+    } else {
+      res.json({
+        err: 'user not found'
+      });
     }
   });
 }
