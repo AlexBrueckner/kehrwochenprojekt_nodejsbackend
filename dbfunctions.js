@@ -319,10 +319,10 @@ exports.createTask = function(res, obj) {
             taskId: newTask._id
           });
         } else {
-        res.json({
-          error: 'error occured while saving task'
-        });
-      }
+          res.json({
+            error: 'error occured while saving task'
+          });
+        }
       });
     } else {
       res.json({
@@ -533,6 +533,23 @@ exports.deleteTask = function(res, obj) {
           });
         }
       });
+    } else {
+      res.json({
+        error: 'user not found'
+      });
+    }
+  });
+}
+// =============================================================================
+
+// =============================================================================
+// db function to delete a Task with given TaskId
+exports.getUserById = function(res, query) {
+  User.findOne({
+    "userName": query.userName
+  }, function(err, user) {
+    if (!err && user) {
+      res.json(user);
     } else {
       res.json({
         error: 'user not found'
