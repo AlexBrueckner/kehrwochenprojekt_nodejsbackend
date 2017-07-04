@@ -565,3 +565,20 @@ exports.getUserByUserName = function(res, query) {
   });
 }
 // =============================================================================
+
+// =============================================================================
+// db function to get an User with given userName
+exports.getUserByUserName = function(res, query) {
+  User.findOne({
+    "_id": query.userId
+  }, function(err, user) {
+    if (!err && user) {
+      res.json(user);
+    } else {
+      res.json({
+        error: 'user not found'
+      });
+    }
+  });
+}
+// =============================================================================
