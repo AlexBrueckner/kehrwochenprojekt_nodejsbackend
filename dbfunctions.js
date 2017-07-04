@@ -521,8 +521,8 @@ exports.assignTaskToNextUser = function(res, obj) {
 exports.deleteTask = function(res, obj) {
   User.findOne({
     "tasks": obj.taskId
-  }, function(err, user) {
-    if (!err && user) {
+  }, function(err) {
+    if (!err) {
       user.tasks.pull({
         "_id": obj.taskId
       });
@@ -542,7 +542,7 @@ exports.deleteTask = function(res, obj) {
       });
     } else {
       res.json({
-        error: 'user not found'
+        error: 'error'
       });
     }
   });
