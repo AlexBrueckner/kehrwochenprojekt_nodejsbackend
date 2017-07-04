@@ -259,7 +259,7 @@ exports.updateFlat = function(res, obj) {
       }
       flat.save();
       res.json({
-        ok: 'flat not found'
+        ok: 'flat successfuly updated'
       });
     } else {
       res.json({
