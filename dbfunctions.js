@@ -521,8 +521,8 @@ exports.assignTaskToNextUser = function(res, obj) {
 exports.deleteTask = function(res, obj) {
   User.findOne({
     "tasks": obj.taskId
-  }, function(err) {
-    if (!err) {
+  }, function(err, user) {
+    if (!err && user) {
       user.tasks.pull({
         "_id": obj.taskId
       });
