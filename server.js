@@ -31,7 +31,7 @@ var router = express.Router(); // get an instance of the express Router
 // =============================================================================
 // /app/user
 router.get('/user', function(req,res){
-  dbfunc.getUserById(res, req.query);
+  dbfunc.getUserByUserName(res, req.query);
 });
 router.post('/user', function(req, res) {
   dbfunc.createUser(res, req.body);

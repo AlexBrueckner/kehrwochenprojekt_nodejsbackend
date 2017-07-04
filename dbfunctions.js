@@ -251,9 +251,10 @@ exports.updateFlat = function(res, obj) {
     "_id": obj.flatId
   }, function(err, flat) {
     if (!err && flat) {
-      if (obj.name && obj.name != flat.name) {
+      if (obj.name) {
         flat.name = obj.name;
-      } else if (obj.penalty && obj.penalty != flat.penalty) {
+      }
+      if (obj.penalty) {
         flat.penalty = obj.penalty
       }
       flat.save();
@@ -382,11 +383,13 @@ exports.updateTask = function(res, obj) {
     "_id": obj.taskId
   }, function(err, task) {
     if (!err && task) {
-      if (obj.name && obj.name != task.name) {
+      if (obj.name) {
         task.name = obj.name;
-      } else if (obj.deadline && obj.deadline != task.deadline) {
+      }
+      if (obj.deadline) {
         task.deadline = obj.deadline;
-      } else if (obj.guideline && obj.guideline != task.guideline) {
+      }
+      if (obj.guideline) {
         task.guideline = obj.guideline;
       }
       task.save();
@@ -547,8 +550,8 @@ exports.deleteTask = function(res, obj) {
 // =============================================================================
 
 // =============================================================================
-// db function to delete a Task with given TaskId
-exports.getUserById = function(res, query) {
+// db function to get an User with given userName
+exports.getUserByUserName = function(res, query) {
   User.findOne({
     "userName": query.userName
   }, function(err, user) {
